@@ -40,7 +40,7 @@ export default function RequireAuth({ children }) {
     }
   }, [status, session, router])
 
-  if (status === "loading") {
+  if (status === "loading" || status === "unauthenticated") {
     return null 
   }
 

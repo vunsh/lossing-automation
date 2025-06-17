@@ -1,16 +1,7 @@
 import Image from "next/image";
 import RequireAuth from "../components/RequireAuth";
 import Profile from "../components/profile";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import Attendance from "@/components/reports/Attendance";
-import Student from "@/components/reports/Student";
-import Enrollment from "@/components/reports/Enrollment";
-import DWP from "@/components/reports/DWP";
-import Timesheet from "@/components/reports/Timesheet";
-import Assessment from "@/components/reports/Assessment";
-import LeadTracking from "@/components/reports/LeadTracking";
-import LeadExport from "@/components/reports/LeadExport";
-import Activities from "@/components/reports/Activities";
+import ReportsTabs from "@/components/reports/ReportsTabs";
 
 export default function Home() {
   return (
@@ -33,46 +24,7 @@ export default function Home() {
         }}
       >
         <div className="max-w-6xl mx-auto">
-          <Tabs defaultValue="Attendance" className="w-full">
-            <TabsList className="mb-6 mx-auto flex-wrap">
-              <TabsTrigger value="Attendance">Attendance</TabsTrigger>
-              <TabsTrigger value="Student">Student</TabsTrigger>
-              <TabsTrigger value="Enrollment">Enrollment</TabsTrigger>
-              <TabsTrigger value="DWP">DWP</TabsTrigger>
-              <TabsTrigger value="Timesheet">Timesheet</TabsTrigger>
-              <TabsTrigger value="Assessment">Assessment</TabsTrigger>
-              <TabsTrigger value="LeadTracking">Lead Tracking</TabsTrigger>
-              <TabsTrigger value="LeadExport">Lead Export</TabsTrigger>
-              <TabsTrigger value="Activities">Activities</TabsTrigger>
-            </TabsList>
-            <TabsContent value="Attendance">
-              <Attendance />
-            </TabsContent>
-            <TabsContent value="Student">
-              <Student />
-            </TabsContent>
-            <TabsContent value="Enrollment">
-              <Enrollment />
-            </TabsContent>
-            <TabsContent value="DWP">
-              <DWP />
-            </TabsContent>
-            <TabsContent value="Timesheet">
-              <Timesheet />
-            </TabsContent>
-            <TabsContent value="Assessment">
-              <Assessment />
-            </TabsContent>
-            <TabsContent value="LeadTracking">
-              <LeadTracking />
-            </TabsContent>
-            <TabsContent value="LeadExport">
-              <LeadExport />
-            </TabsContent>
-            <TabsContent value="Activities">
-              <Activities />
-            </TabsContent>
-          </Tabs>
+          <ReportsTabs />
         </div>
       </div>
     </RequireAuth>
