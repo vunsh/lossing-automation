@@ -1,7 +1,7 @@
 import Image from "next/image";
 import RequireAuth from "../components/RequireAuth";
 import Profile from "../components/profile";
-import ReportsTabs from "@/components/reports/ReportsTabs";
+import CombinedForm from "@/components/reports/CombinedForm";
 
 export default function Home() {
   return (
@@ -24,7 +24,7 @@ export default function Home() {
         }}
       >
         <div className="max-w-6xl mx-auto">
-          <ReportsTabs />
+          <CombinedForm />
         </div>
       </div>
     </RequireAuth>
