@@ -17,7 +17,6 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 
-// Helper to get the 1st of the previous month
 function getPrevMonthFirstDay() {
   const d = new Date()
   d.setMonth(d.getMonth() - 1)
@@ -26,9 +25,9 @@ function getPrevMonthFirstDay() {
   return d
 }
 
-// Helper to get today
-function getToday() {
+function getYesterday() {
   const d = new Date()
+  d.setDate(d.getDate() - 1)
   d.setHours(0, 0, 0, 0)
   return d
 }
@@ -44,7 +43,7 @@ export const timesheetFilterElements = [
     id: "TimesheetEndDate",
     label: "End Date",
     type: "date",
-    default: getToday(),
+    default: getYesterday(),
   },
 ]
 

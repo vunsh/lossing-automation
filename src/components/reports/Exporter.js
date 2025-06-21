@@ -86,9 +86,31 @@ export default function Exporter({ onNext, initialValues }) {
               name="reports"
               render={({ field }) => (
                 <FormItem className="flex flex-col">
-                  <FormLabel className="mb-1 text-2xl font-extrabold text-red-500 tracking-tight drop-shadow-lg">
-                    Reports
-                  </FormLabel>
+                  <div className="flex items-center mb-1 gap-2">
+                    <FormLabel className="text-2xl font-extrabold text-red-500 tracking-tight drop-shadow-lg">
+                      Reports
+                    </FormLabel>
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="ghost"
+                      className="text-xs px-2 py-0 h-6 rounded border border-red-500 text-red-500 hover:bg-red-500/10 ml-2"
+                      onClick={() => field.onChange(reports.map(r => r.value))}
+                      tabIndex={-1}
+                    >
+                      Select All
+                    </Button>
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="ghost"
+                      className="text-xs px-2 py-0 h-6 rounded border border-neutral-500 text-neutral-400 hover:bg-neutral-700/20 ml-1"
+                      onClick={() => field.onChange([])}
+                      tabIndex={-1}
+                    >
+                      Reset
+                    </Button>
+                  </div>
                   <Popover open={openReports} onOpenChange={setOpenReports}>
                     <PopoverTrigger asChild>
                       <FormControl>
@@ -160,9 +182,31 @@ export default function Exporter({ onNext, initialValues }) {
               name="regions"
               render={({ field }) => (
                 <FormItem className="flex flex-col">
-                  <FormLabel className="mb-1 text-2xl font-extrabold text-red-500 tracking-tight drop-shadow-lg">
-                    Regions
-                  </FormLabel>
+                  <div className="flex items-center mb-1 gap-2">
+                    <FormLabel className="text-2xl font-extrabold text-red-500 tracking-tight drop-shadow-lg">
+                      Regions
+                    </FormLabel>
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="ghost"
+                      className="text-xs px-2 py-0 h-6 rounded border border-red-500 text-red-500 hover:bg-red-500/10 ml-2"
+                      onClick={() => field.onChange(regions.map(r => r.value))}
+                      tabIndex={-1}
+                    >
+                      Select All
+                    </Button>
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="ghost"
+                      className="text-xs px-2 py-0 h-6 rounded border border-neutral-500 text-neutral-400 hover:bg-neutral-700/20 ml-1"
+                      onClick={() => field.onChange([])}
+                      tabIndex={-1}
+                    >
+                      Reset
+                    </Button>
+                  </div>
                   <Popover open={openRegions} onOpenChange={setOpenRegions}>
                     <PopoverTrigger asChild>
                       <FormControl>

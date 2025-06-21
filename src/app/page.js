@@ -17,13 +17,10 @@ export default function Home() {
       <div
         className="min-h-screen pt-20 px-4"
         style={{
-          backgroundImage: 'url("/reports-background.png")',
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          backgroundRepeat: "no-repeat",
+          background: "linear-gradient(135deg, #1a0000 0%, #ff1a1a  60%, #1a0000 100%)",
         }}
       >
-        <div className="max-w-6xl mx-auto">
+        <div className="max-w-6xl mx-auto pb-12">
           <CombinedForm />
         </div>
       </div>

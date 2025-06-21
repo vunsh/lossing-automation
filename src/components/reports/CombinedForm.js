@@ -30,7 +30,6 @@ function StepTwo({ onBack, formValues, onSubmitFilters }) {
 function Stepper({ step }) {
   return (
     <div className="flex items-center justify-center gap-4 mb-12 w-full max-w-xs mx-auto">
-      {/* Step 1 */}
       <div className="flex flex-col items-center">
         <div
           className={`w-7 h-7 flex items-center justify-center rounded-full border-2 shadow transition-all duration-300 ${
@@ -160,8 +159,8 @@ export default function CombinedForm() {
   const [step, setStep] = useState(1);
   const [formValues, setFormValues] = useState({ reports: [], regions: [] });
 
-  // Job progress state
   const [jobs, setJobs] = useState([]); 
+  const [originalJobs, setOriginalJobs] = useState([]); 
   const [currentJobIdx, setCurrentJobIdx] = useState(0);
   const [isRunning, setIsRunning] = useState(false);
   const [allDone, setAllDone] = useState(false);
@@ -174,28 +173,26 @@ export default function CombinedForm() {
   };
 
   function getPendingJobs(jobsArr, failedIdx) {
-    // Only jobs after the failed one (failedIdx) are pending
     return jobsArr.slice(failedIdx + 1).map((j) => ({
       report: j.jobInfo.report,
       region: j.jobInfo.region,
     }));
   }
 
-  // Helper to get the jobInfo for the failed job
   function getFailedJobInfo(jobsArr, currentIdx) {
     if (!jobsArr[currentIdx]) return null;
     return jobsArr[currentIdx].jobInfo;
   }
 
-  async function runJobsSequential(data, startIdx = 0, pendingJobs = []) {
+  async function runJobsSequential(data, startIdx = 0, pendingJobs = [], jobsFilters = null) {
     setIsRunning(true);
     setAllDone(false);
     setErrorJob(null);
 
-    // Prepare the jobs to run either from pendingJobs or from formData
     let jobsToRun = [];
+    let filtersToUse = jobsFilters || data.filters;
     if (pendingJobs && pendingJobs.length > 0) {
-      jobsToRun = pendingJobs;
+      jobsToRun = originalJobs.length > 0 ? originalJobs.map(j => ({ report: j.report, region: j.region })) : pendingJobs;
     } else {
       const reports = data.initialData?.reports || [];
       const regions = data.initialData?.regions || [];
@@ -206,31 +203,41 @@ export default function CombinedForm() {
       }
     }
 
-    let completedJobs = startIdx > 0 ? jobs.slice(0, startIdx) : [];
+    if (!jobsFilters && !pendingJobs.length) {
+      setOriginalJobs(jobsToRun.map(j => ({ ...j, filters: { ...(data.filters?.[j.report] || {}) } })));
+    }
 
-    let idx = 0;
-    for (; idx < jobsToRun.length; idx++) {
+    let initialJobs = jobsToRun.map((job, idx) => {
+      const existing = jobs[idx];
+      return existing && existing.jobInfo && existing.jobInfo.report === job.report && existing.jobInfo.region === job.region
+        ? existing
+        : { jobInfo: { report: job.report, region: job.region, jobId: null }, streamMsgs: [] };
+    });
+    setJobs(initialJobs);
+
+    let completedJobs = [...initialJobs];
+
+    for (let idx = startIdx; idx < jobsToRun.length; idx++) {
       const { report, region } = jobsToRun[idx];
-      const filterArr = data.filters?.[report]
-        ? Object.values(data.filters[report])
-        : [];
       let jobInfo = null;
       let streamMsgs = [];
       let error = null;
 
       await submitAllReportsSequential(
         {
-          filters: { [report]: data.filters?.[report] || {} },
+          filters: { [report]: filtersToUse?.[report] || {} },
           initialData: { reports: [report], regions: [region] },
         },
         (ji, streamMsg) => {
           jobInfo = ji;
           streamMsgs = [...streamMsgs, streamMsg];
           setJobs((prev) => {
-            let newJobs = [...completedJobs, { jobInfo, streamMsgs }];
-            return newJobs;
+            const updated = prev.map((j, jdx) =>
+              jdx === idx ? { jobInfo, streamMsgs } : j
+            );
+            return updated;
           });
-          setCurrentJobIdx(completedJobs.length);
+          setCurrentJobIdx(idx);
           if (streamMsg && streamMsg.error) {
             error = { error: streamMsg };
           }
@@ -246,16 +253,22 @@ export default function CombinedForm() {
           jobInfo,
           streamMsgs,
           error: streamMsgs.find((msg) => msg.error),
-          failedIdx: completedJobs.length,
+          failedIdx: idx,
         });
         setIsRunning(false);
         setAllDone(false);
-        setJobs([...completedJobs, { jobInfo, streamMsgs }]);
-        setCurrentJobIdx(completedJobs.length);
+        setIsRetrying(false);
+        setJobs((prev) => {
+          const updated = prev.map((j, jdx) =>
+            jdx === idx ? { jobInfo, streamMsgs } : j
+          );
+          return updated;
+        });
+        setCurrentJobIdx(idx);
         return;
       }
 
-      completedJobs = [...completedJobs, { jobInfo, streamMsgs }];
+      completedJobs[idx] = { jobInfo, streamMsgs };
     }
 
     setJobs(completedJobs);
@@ -268,7 +281,8 @@ export default function CombinedForm() {
     setCurrentJobIdx(0);
     setAllDone(false);
     setErrorJob(null);
-    await runJobsSequential(data, 0, []);
+    setOriginalJobs([]);
+    await runJobsSequential(data, 0, [], null);
   }
 
   async function handleRetry() {
@@ -276,21 +290,16 @@ export default function CombinedForm() {
     setIsRetrying(true);
 
     const failedIdx = errorJob.failedIdx ?? currentJobIdx;
-    const pending = getPendingJobs(jobs, failedIdx);
-    const retryJobs = [
-      {
-        report: errorJob.jobInfo.report,
-        region: errorJob.jobInfo.region,
-      },
-      ...pending,
-    ];
-    setJobs(jobs.slice(0, failedIdx));
+    const filtersForRetry = {};
+    originalJobs.forEach(j => { filtersForRetry[j.report] = j.filters; });
+    setJobs((prev) => prev.map((job, idx) => idx < failedIdx ? job : { ...job, streamMsgs: [] }));
     setCurrentJobIdx(failedIdx);
 
     await runJobsSequential(
-      { filters: formValues.filters, initialData: formValues.initialData },
-      0,
-      retryJobs
+      { filters: filtersForRetry, initialData: formValues.initialData },
+      failedIdx,
+      originalJobs.slice(failedIdx),
+      filtersForRetry
     );
     setIsRetrying(false);
   }

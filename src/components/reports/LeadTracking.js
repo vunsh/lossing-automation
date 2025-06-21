@@ -25,10 +25,14 @@ import {
   CommandList,
 } from "@/components/ui/command"
 
-// Helper to get one month before today
-function getOneMonthAgo() {
+function get3MonthsAgo() {
   const d = new Date()
   d.setMonth(d.getMonth() - 3)
+  return d
+}
+
+function getToday() {
+  const d = new Date()
   return d
 }
 
@@ -37,13 +41,13 @@ export const leadTrackingFilterElements = [
     id: "ReportStart",
     label: "Start Date",
     type: "date",
-    default: getOneMonthAgo(),
+    default: get3MonthsAgo(),
   },
   {
     id: "ReportEnd",
     label: "End Date",
     type: "date",
-    default: null,
+    default: getToday(),
   },
   {
     id: "ConversionStatusDropDownList",

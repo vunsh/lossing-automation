@@ -17,19 +17,28 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 
+function getOct19_2015() {
+  const d = new Date("2015-10-19")
+  return d
+}
+
+function getToday() {
+  const d = new Date()
+  return d
+}
 
 export const studentFilterElements = [
   {
     id: "StudentStartDate",
     label: "Start Date",
     type: "date",
-    default: null,
+    default: getOct19_2015(),
   },
   {
     id: "StudentEndDate",
     label: "End Date",
     type: "date",
-    default: null,
+    default: getToday(),
   },
 ]
 

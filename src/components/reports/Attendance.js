@@ -25,9 +25,16 @@ import {
 	CommandList,
 } from "@/components/ui/command"
 
-function getOneMonthAgo() {
+function getFirstOfPreviousMonth() {
 	const d = new Date()
-	d.setMonth(d.getMonth() - 1)
+	d.setDate(1) 
+	d.setMonth(d.getMonth() - 1) 
+	return d
+}
+
+function getYesterday() {
+	const d = new Date()
+	d.setDate(d.getDate() - 1) 
 	return d
 }
 
@@ -36,13 +43,13 @@ export const attendanceFilterElements = [
 		id: "ReportStart",
 		label: "Start Date",
 		type: "date",
-		default: getOneMonthAgo(),
+		default: getFirstOfPreviousMonth(),
 	},
 	{
 		id: "ReportEnd",
 		label: "End Date",
 		type: "date",
-		default: null,
+		default: getYesterday(),
 	},
 	{
 		id: "DeliveryOptionsFilter",

@@ -25,10 +25,14 @@ import {
   CommandList,
 } from "@/components/ui/command"
 
-// Helper to get one year before today
 function getOneYearAgo() {
   const d = new Date()
   d.setFullYear(d.getFullYear() - 1)
+  return d
+}
+
+function getToday() {
+  const d = new Date()
   return d
 }
 
@@ -40,10 +44,10 @@ export const assessmentFilterElements = [
     default: getOneYearAgo(),
   },
   {
-    id: "ReportEnd  ",
+    id: "ReportEnd",
     label: "End Date",
     type: "date",
-    default: null,
+    default: getToday(),
   },
   {
     id: "prePostDropDownList",
